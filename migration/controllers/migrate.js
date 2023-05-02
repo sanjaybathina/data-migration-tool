@@ -15,19 +15,23 @@ const updateMigrationStatus = async (_id, status) => {
   const client = await getClient();
   const collection = client.collection("migrations");
 
-  await collection.updateOne({ _id: new ObjectId(_id) }, { $set: { status, updatedAt: new Date() } });
+  await collection.updateOne(
+    { _id: new ObjectId(_id) },
+    { $set: { status, updatedAt: new Date() } }
+  );
   console.log("INFO: migration status updated in mongodb successfully");
 };
 
 const migrate = async (data) => {
+  const {
+    _id,
+    sourceHostId,
+    sourceDatabase,
+    destinationHostId,
+    destinationDatabase,
+  } = JSON.parse(data);
+  console.log(JSON.parse(data));
   try {
-    const {
-     _id,
-      sourceHostId,
-      sourceDatabase,
-      destinationHostId,
-      destinationDatabase,
-    } = JSON.parse(data);
     console.log({
       sourceHostId,
       sourceDatabase,
@@ -55,6 +59,10 @@ const migrate = async (data) => {
 
     await sourceClient.connect();
     await destinationClient.connect();
+
+    // use database
+    // await sourceClient.query(`USE ${sourceDatabase}`);
+    // await destinationClient.query(`USE ${destinationDatabase}`);
 
     const sourceTables = await sourceClient.query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"

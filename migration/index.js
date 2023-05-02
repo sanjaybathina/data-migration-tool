@@ -4,7 +4,6 @@ const { migrate } = require("./controllers/migrate");
 const kafka = new Kafka({
   clientId: "my-app",
   brokers: ["127.0.0.1:29092"],
-  
 });
 
 const consumer = kafka.consumer({ groupId: "migrations" });
@@ -14,7 +13,7 @@ const consumer = kafka.consumer({ groupId: "migrations" });
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      migrate(message.value.toString())
+      migrate(message.value.toString());
     },
   });
 })();
